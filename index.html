@@ -1,0 +1,141 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Stop-watch TDD</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.18.0.css">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+  </head>
+  <body>
+    <div id='main' style='padding: 2em;'>
+      <h1>Stop-watch</h1>
+      <h2>Stop watch which starts on click of a button</h2>
+     
+      <div class="stopWatch">
+          <input type="text" id="display"/>
+          <button id="start"type="button" onclick="starttimer()" >Start</button>
+          <button type="button" onclick="stoptimer()" >Stop</button>
+          <button type="button" onclick="cleartimer()" >Clear</button>
+
+
+      
+      </div>
+
+
+
+    </div>
+
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+
+
+
+
+    <script src="https://code.jquery.com/qunit/qunit-1.18.0.js"></script>
+
+
+    <script>
+    var display= document.getElementById('display');
+    var centiseconds=00;
+    var seconds=00;
+    var minutes=00;
+    var timeFormatted= twoDigit(minutes) + ":"+ twoDigit(seconds)+":"+twoDigit(centiseconds)
+
+    var T = (function(){ 
+        'use strict';
+
+        var timeElapsed =0;
+        var timeStarted =timeFormatted;
+
+
+        return { 
+          timeStarted : timeStarted,
+          timeElapsed : timeElapsed
+        };
+
+    }());
+    
+    display.value = T.timeStarted;
+
+   
+
+    var starttimer= function() {
+       timer= setInterval(count,100);
+    }
+    
+    var count= function(){
+      addToCentiseconds()
+      addToSeconds()
+      addToMinutes()
+      console.log(minutes + ":"+ seconds+":"+ centiseconds);
+      display.value = twoDigit(minutes) + ":"+ twoDigit(seconds)+":"+twoDigit(centiseconds);
+
+    }
+    function twoDigit(number) {
+        var twodigit = number >= 10 ? number : "0"+number.toString();
+        return twodigit;
+    }
+    var addToCentiseconds= function(){
+        centiseconds+=1;
+        T.timeElapsed=centiseconds;
+    }
+    
+    var addToSeconds= function(){
+         
+      if( centiseconds== 100 ) {
+          centiseconds =0;
+          seconds+=1;
+        }
+        
+    }
+
+    var addToMinutes= function(){
+      if (seconds ==60){ 
+        minutes+=1
+        seconds=0;
+      }
+    }
+
+
+    var stoptimer= function (){
+        clearInterval(timer); 
+    }
+
+    var cleartimer= function() { 
+         display.value= T.timeStarted
+    }
+  
+  
+       
+    </script>
+
+    <script>
+
+    test( "The timer is zero before it is started", function(assert) {
+      assert.equal( T.timeElapsed, 0, 'Message: timer is zero at start' );
+    });
+
+    test( "timer starts incerementing timeElapsed", function(assert) { 
+        
+    var  done = assert.async();
+          
+          starttimer();
+          setTimeout(function() {
+          assert.equal( T.timeElapsed,1,'Message: time is not eqaul to zero'   );
+          done();
+          stoptimer();
+        }, 80000 );
+
+          
+    });
+   
+   /* test( "timer stops on click", function(assert) { 
+          stoptimer();
+          assert.equal(T.timeElapsed,0,'Message: time increment stops with stop() function')          
+
+    });
+   */
+   
+      
+    </script>
+  </body>
+</html>
